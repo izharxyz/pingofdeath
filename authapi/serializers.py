@@ -10,6 +10,8 @@ class RegisterSerializer(serializers.Serializer):
     def validate(self, data):
         if User.objects.filter(username = data['username']).exists():
             raise serializers.ValidationError('username is taken')
+        if User.objects.filter(email = data['email']).exists():
+            raise serializers.ValidationError('account with this email already exixts')
         return data
 
     def create(self, validated_data):
