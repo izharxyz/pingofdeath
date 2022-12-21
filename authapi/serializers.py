@@ -1,18 +1,19 @@
 from rest_framework import serializers
-from .models import User
+from django.contrib.auth.models import User
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'name', 'email', 'password']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+class RegisterSerializer(serializers.Serializer):
 
-        def create(self, validated_data):
-            password = validated_data.pop('password', None)
-            instance = self.Meta.model(**validated_data)
-            if password is not None:
-                instance.set_password(password)
-            instance.save()
-            return instance
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        if User.objects.filter(username = data['username']).exists():
+            raise serializers.ValidationError('username is taken')
+        return data
+
+    def create(self, validated_data):
+        user = User.objects.create(username = validated_data['username'],
+            email = validated_data['email'])
+        user.set_password(validated_data['password'])
+        return validated_data
