@@ -61,3 +61,33 @@ class LoginView(APIView):
         }
 
         return response
+
+
+class HomeView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('token')
+        
+        if not token:
+            raise AuthenticationFailed('unauthenticated')
+        
+        try:
+            payload = jwt.decode(token, 'secret', ['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('unauthenticated')
+
+        user = User.objects.filter(id = payload['id']).first()
+        return Response({
+            'data': {},
+            'message': 'logged in'
+        })
+
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response()
+        response.delete_cookie('token')
+        response.data = {
+            'data': {},
+            'message': 'logged out successfully'
+        }
+        
+        return response
