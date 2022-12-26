@@ -15,20 +15,20 @@ class RegisterView(APIView):
 
             if not serializer.is_valid():
                 return Response({
-                    'data': serializer.errors,
+                    'detail': serializer.errors,
                     'message': 'something went wrong'
                 }, status = status.HTTP_400_BAD_REQUEST)
 
             serializer.save()
             return Response({
-                'data': {},
+                'detail': {},
                 'message': 'account created successfully!'
             }, status = status.HTTP_201_CREATED)
 
         except Exception as e:
             print(e)
             return Response({
-                'data': {},
+                'detail': {},
                 'message': 'something went wrong'
             }, status = status.HTTP_400_BAD_REQUEST)
 
@@ -56,7 +56,7 @@ class LoginView(APIView):
         response = Response()
         response.set_cookie(key='token', value=token, httponly=True)
         response.data = {
-            'data': {},
+            'detail': {},
             'message': 'login successful!'
         }
 
@@ -77,7 +77,7 @@ class HomeView(APIView):
 
         user = User.objects.filter(id = payload['id']).first()
         return Response({
-            'data': {},
+            'detail': {},
             'message': 'logged in'
         })
 
@@ -86,7 +86,7 @@ class LogoutView(APIView):
         response = Response()
         response.delete_cookie('token')
         response.data = {
-            'data': {},
+            'detail': {},
             'message': 'logged out successfully'
         }
         
