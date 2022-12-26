@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # custom apps
-    'authapi'
+    'authapi',
+    'blog'
 ]
 
 MIDDLEWARE = [
