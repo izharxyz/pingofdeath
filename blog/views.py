@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from django.contrib.auth.models import User
+from django.db.models import Q
 import jwt
 
 from .serializers import BlogSerializer
@@ -25,6 +26,11 @@ class BlogView(APIView):
 
         try:
             blog = Blog.objects.filter(owner=user.id)
+
+            if request.GET.get('search'):
+                search = request.GET.get('search')
+                blog = blog.filter(Q(title__icontains = search) | Q(body__icontains = search))
+
             serializer = BlogSerializer(blog, many=True)
             return Response({
                 'detail': serializer.data,
