@@ -3,4 +3,4 @@
 __pycache__
 db.sqlite3
 blogs_thubnails/
-blogs_thumbnails
+blog_thumbnails/

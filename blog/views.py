@@ -6,8 +6,36 @@ from django.contrib.auth.models import User
 import jwt
 
 from .serializers import BlogSerializer
+from .models import Blog
 
 class BlogView(APIView):
+
+    def get(self, request):
+        token = request.COOKIES.get('token')
+        
+        if not token:
+            raise AuthenticationFailed('unauthenticated')
+        
+        try:
+            payload = jwt.decode(token, 'secret', ['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('unauthenticated')
+
+        user = User.objects.filter(id = payload['id']).first()
+
+        try:
+            blog = Blog.objects.filter(owner=user.id)
+            serializer = BlogSerializer(blog, many=True)
+            return Response({
+                'detail': serializer.data,
+                'message': 'blog fetched successfully'
+            })
+        except:
+            return Response({
+                'detail': {},
+                'message': 'something went wrong'
+            })
+
 
     # post method to create blog
     def post(self, request): 
