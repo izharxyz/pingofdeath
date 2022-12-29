@@ -93,7 +93,15 @@ class BlogView(APIView):
 
         if user.is_authenticated:
             data = request.data
-            blog = Blog.objects.filter(uid = data.get('uid')).first()
+
+            try:
+                blog = Blog.objects.filter(uid = data.get('uid')).first()
+                _ = blog.title # will fail if blog = None
+            except:
+                return Response({
+                    'detail': {},
+                    'message': 'invalid blog uid'
+                })
             
             if user == blog.owner:
                 serializer = BlogSerializer(blog, data=data, partial=True)
@@ -116,3 +124,39 @@ class BlogView(APIView):
                     'message': 'operation not permitted'
                 })
         
+    def delete(self, request): 
+        token = request.COOKIES.get('token')
+        
+        if not token:
+            raise AuthenticationFailed('unauthenticated')
+        
+        try:
+            payload = jwt.decode(token, 'secret', ['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('unauthenticated')
+
+        user = User.objects.filter(id = payload['id']).first()
+
+        if user.is_authenticated:
+            data = request.data
+
+            try:
+                blog = Blog.objects.filter(uid = data.get('uid')).first()
+                _ = blog.title # will fail if blog = None
+            except:
+                return Response({
+                    'detail': {},
+                    'message': 'invalid blog uid'
+                })
+            
+            if user == blog.owner:
+                blog.delete()
+                return Response({
+                    'detail': {},
+                    'message': 'blog updated successfully'
+                })
+            else:
+                return Response({
+                    'detail': {},
+                    'message': 'operation not permitted'
+                })
