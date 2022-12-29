@@ -1,5 +1,6 @@
 # build_files.sh
 echo "########## BUILD START ##########"
+uname -a
 python3.9 -m pip install --upgrade setuptools
 python3.9 -m pip install -r requirements.txt
 
