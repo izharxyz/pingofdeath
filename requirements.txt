@@ -1,17 +1,9 @@
 asgiref==3.6.0
-autopep8==2.0.1
-bleach==5.0.1
 Django==4.1.4
 django-cors-headers==3.13.0
-django-summernote==0.8.20.0
 djangorestframework==3.14.0
 Pillow==9.3.0
 psycopg2==2.9.5
-psycopg2-binary==2.9.5
-pycodestyle==2.10.0
 PyJWT==2.6.0
 pytz==2022.7
-six==1.16.0
 sqlparse==0.4.3
-tomli==2.0.1
-webencodings==0.5.1
