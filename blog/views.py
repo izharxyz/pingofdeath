@@ -4,10 +4,36 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.core.paginator import Paginator
 import jwt
 
 from .serializers import BlogSerializer
 from .models import Blog
+
+class BlogHomeView(APIView):
+    def get(self, request):
+        try:
+            blog = Blog.objects.all().order_by('?') # fetch random blogs for home page
+
+            if request.GET.get('search'):
+                search = request.GET.get('search')
+                blog = blog.filter(Q(title__icontains = search) | Q(body__icontains = search))
+            
+            page_number = request.GET.get('page', 1)
+            paginator = Paginator(blog, 9)
+
+            serializer = BlogSerializer(paginator.page(page_number), many=True)
+            return Response({
+                'detail': serializer.data,
+                'message': 'blog fetched successfully'
+            })
+
+        except:
+            return Response({
+                'detail': {},
+                'message': 'something went wrong'
+            })
+
 
 class BlogView(APIView):
 
