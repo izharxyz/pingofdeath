@@ -9,6 +9,12 @@ class Blog(models.Model):
     title = models.CharField(
         max_length=128,
         validators=[MinLengthValidator(5, 'title must be greater than 5 characters')])
+    
+    description = models.CharField(
+        max_length=256,
+        default='An Awesome Blog',
+        validators=[MinLengthValidator(10, 'description must be greater than 10 characters')]
+    )
     body = models.TextField(
         validators=[MinLengthValidator(100, 'blog must be greater than 100 characters')]
     )
