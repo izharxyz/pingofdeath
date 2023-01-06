@@ -186,3 +186,20 @@ class BlogView(APIView):
                     'detail': {},
                     'message': 'operation not permitted'
                 })
+    
+class SingleBlogView(APIView):
+    def get(self, request, pk):
+        
+        try:
+            blog = Blog.objects.filter(uid = pk).first()
+            serializer = BlogSerializer(blog)
+            
+            return Response({
+                'detail': serializer.data,
+                'message': 'blog fetched successfully'
+            })
+        except:
+            return Response({
+                'detail': {},
+                'message': 'something went wrong'
+            })
