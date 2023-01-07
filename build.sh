@@ -3,9 +3,8 @@ echo "########## BUILD START ##########"
 uname -a
 
 echo "username: $USER"
-ifconfig
 
-sudo systemctl status sshd
+python3 --version
 
 python3 -m pip install pip==21.3.1
 
