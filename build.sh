@@ -6,10 +6,11 @@ echo "username: $USER"
 
 python3 --version
 
-python3 -m pip install pip==21.3.1
+python3 -m venv venv 
+source venv/bin/activate
 
 
-# python3.9 -m pip install --upgrade setuptools
+python3.9 -m pip install --upgrade setuptools
 python3 -m pip install -r requirements.txt
 
 python3 manage.py makemigrations
