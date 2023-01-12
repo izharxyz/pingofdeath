@@ -4,7 +4,7 @@ uname -a
 
 echo "username: $USER"
 
- python3 --version 
+python3 --version 
 
 python3 -m venv venv 
 
