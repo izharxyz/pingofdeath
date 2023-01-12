@@ -3,9 +3,7 @@ echo "########## BUILD START ##########"
 uname -a
 
 echo "username: $USER"
-
-python3 --version 
-
+ 
 python3 -m venv venv 
 
 python3.9 -m pip install --upgrade setuptools
