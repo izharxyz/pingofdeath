@@ -2,7 +2,7 @@
 echo "########## BUILD START ##########"
 uname -a
 
-echo "username: $USER"
+echo "username: $USER"#
  
 python3 -m venv venv 
 
