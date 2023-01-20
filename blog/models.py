@@ -4,8 +4,16 @@ from django.contrib.auth.models import User
 
 import uuid
 
+class Category(models.Model):
+    name = models.CharField(max_length=128, default='tech')
+    
+    def __str__(self) -> str:
+        return self.name
+
 class Blog(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+
     title = models.CharField(
         max_length=128,
         validators=[MinLengthValidator(5, 'title must be greater than 5 characters')])
@@ -27,8 +35,3 @@ class Blog(models.Model):
     def __str__(self) -> str:
         return self.title
 
-class Category(models.Model):
-    name = models.CharField()
-    
-    def __str__(self) -> str:
-        return self.name
