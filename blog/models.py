@@ -26,3 +26,9 @@ class Blog(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+class Category(models.Model):
+    name = models.CharField()
+    
+    def __str__(self) -> str:
+        return self.name
