@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 import uuid
 
 class Category(models.Model):
-    name = models.CharField(max_length=50, default='tech')
+    name = models.CharField(max_length=32, default='tech')
     
     def __str__(self) -> str:
         return self.name
