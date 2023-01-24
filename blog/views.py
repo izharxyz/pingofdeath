@@ -184,7 +184,7 @@ class BlogView(APIView):
             else:
                 return Response({
                     'detail': {},
-                    'message': 'operation not permitted'
+                    'message': 'operation not permitted.'
                 })
     
 class SingleBlogView(APIView):
