@@ -51,7 +51,8 @@ INSTALLED_APPS = [
 
     # custom apps
     'authapi',
-    'blog'
+    'blog',
+    'index',
 ]
 
 MIDDLEWARE = [
