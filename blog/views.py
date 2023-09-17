@@ -1,24 +1,26 @@
+import jwt
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Q
+from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework import status
-from django.contrib.auth.models import User
-from django.db.models import Q
-from django.core.paginator import Paginator
-import jwt
 
-from .serializers import BlogSerializer
 from .models import Blog
+from .serializers import BlogSerializer
 
-class BlogHomeView(APIView):
+
+class BlogView(APIView):
     def get(self, request):
         try:
-            blog = Blog.objects.all().order_by('?') # fetch random blogs for home page
+            blog = Blog.objects.all().order_by('?')  # fetch random blogs for home page
 
             if request.GET.get('search'):
                 search = request.GET.get('search')
-                blog = blog.filter(Q(title__icontains = search) | Q(body__icontains = search))
-            
+                blog = blog.filter(Q(title__icontains=search)
+                                   | Q(body__icontains=search))
+
             page_number = request.GET.get('page', 1)
             paginator = Paginator(blog, 9)
 
@@ -35,29 +37,30 @@ class BlogHomeView(APIView):
             })
 
 
-class BlogView(APIView):
+class BlogHomeView(APIView):
 
     # the deafult home page
     def get(self, request):
         token = request.COOKIES.get('token')
-        
+
         if not token:
             raise AuthenticationFailed('unauthenticated')
-        
+
         try:
             payload = jwt.decode(token, 'secret', ['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('unauthenticated')
 
         # home page will return only user's own post if user is logged in
-        user = User.objects.filter(id = payload['id']).first()
+        user = User.objects.filter(id=payload['id']).first()
 
         try:
             blog = Blog.objects.filter(owner=user.id)
 
             if request.GET.get('search'):
                 search = request.GET.get('search')
-                blog = blog.filter(Q(title__icontains = search) | Q(body__icontains = search))
+                blog = blog.filter(Q(title__icontains=search)
+                                   | Q(body__icontains=search))
 
             serializer = BlogSerializer(blog, many=True)
             return Response({
@@ -72,30 +75,31 @@ class BlogView(APIView):
             })
 
 
+class BlogCreateView(APIView):
     # post method to create blog
-    def post(self, request): 
+    def post(self, request):
         token = request.COOKIES.get('token')
-        
+
         if not token:
             raise AuthenticationFailed('unauthenticated')
-        
+
         try:
             payload = jwt.decode(token, 'secret', ['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('unauthenticated')
 
-        user = User.objects.filter(id = payload['id']).first()
+        user = User.objects.filter(id=payload['id']).first()
 
         if user.is_authenticated:
             data = request.data
             data['owner'] = user.id
-            serializer = BlogSerializer(data = data)
+            serializer = BlogSerializer(data=data)
             if not serializer.is_valid():
                 return Response({
                     'detail': serializer.errors,
                     'message': 'something went wrong'
                 })
-            
+
             serializer.save()
 
             return Response({
@@ -104,31 +108,32 @@ class BlogView(APIView):
             }, status=status.HTTP_201_CREATED)
 
 
-    def patch(self, request): 
+class BlogUpdateView(APIView):
+    def patch(self, request):
         token = request.COOKIES.get('token')
-        
+
         if not token:
             raise AuthenticationFailed('unauthenticated')
-        
+
         try:
             payload = jwt.decode(token, 'secret', ['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('unauthenticated')
 
-        user = User.objects.filter(id = payload['id']).first()
+        user = User.objects.filter(id=payload['id']).first()
 
         if user.is_authenticated:
             data = request.data
 
             try:
-                blog = Blog.objects.filter(uid = data.get('uid')).first()
-                _ = blog.title # will fail if blog = None
+                blog = Blog.objects.filter(uid=data.get('uid')).first()
+                _ = blog.title  # will fail if blog = None
             except:
                 return Response({
                     'detail': {},
                     'message': 'invalid blog uid'
                 })
-            
+
             if user == blog.owner:
                 serializer = BlogSerializer(blog, data=data, partial=True)
 
@@ -149,32 +154,34 @@ class BlogView(APIView):
                     'detail': {},
                     'message': 'operation not permitted'
                 })
-        
-    def delete(self, request): 
+
+
+class BlogDeleteView(APIView):
+    def delete(self, request):
         token = request.COOKIES.get('token')
-        
+
         if not token:
             raise AuthenticationFailed('unauthenticated')
-        
+
         try:
             payload = jwt.decode(token, 'secret', ['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('unauthenticated')
 
-        user = User.objects.filter(id = payload['id']).first()
+        user = User.objects.filter(id=payload['id']).first()
 
         if user.is_authenticated:
             data = request.data
 
             try:
-                blog = Blog.objects.filter(uid = data.get('uid')).first()
-                _ = blog.title # will fail if blog = None
+                blog = Blog.objects.filter(uid=data.get('uid')).first()
+                _ = blog.title  # will fail if blog = None
             except:
                 return Response({
                     'detail': {},
                     'message': 'invalid blog uid'
                 })
-            
+
             if user == blog.owner:
                 blog.delete()
                 return Response({
@@ -186,14 +193,15 @@ class BlogView(APIView):
                     'detail': {},
                     'message': 'operation not permitted'
                 })
-    
+
+
 class SingleBlogView(APIView):
     def get(self, request, pk):
-        
+
         try:
-            blog = Blog.objects.filter(uid = pk).first()
+            blog = Blog.objects.filter(uid=pk).first()
             serializer = BlogSerializer(blog)
-            
+
             return Response({
                 'detail': serializer.data,
                 'message': 'blog fetched successfully'
