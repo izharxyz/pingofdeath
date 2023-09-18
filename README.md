@@ -1,6 +1,6 @@
-# Django Blog API
+# Ping of death
 
-Welcome to the Django Blog API project! This project provides a backend API for a blogging platform developed using Django Rest Framework (DRF). It is designed to store and serve blog posts and related data.
+Welcome to the pingofdeath project! This project provides a backend API for a blogging platform developed using Django Rest Framework (DRF). It is designed to store and serve blog posts and related data.
 
 ## Table of Contents
 
